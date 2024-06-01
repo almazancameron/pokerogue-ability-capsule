@@ -397,6 +397,42 @@ export class PokemonNatureChangeModifierType extends PokemonModifierType {
   }
 }
 
+export class PokemonAbilityChangeModifierType extends PokemonModifierType {
+  protected index: integer;
+
+  constructor(index: integer) {
+    super(
+      "",
+      //TODO: Change icon
+      "ability_charm",
+      (_type, args) =>
+        new Modifiers.PokemonAbilityChangeModifier(
+          this,
+          (args[0] as PlayerPokemon).id,
+          this.index
+        ),
+      (pokemon: PlayerPokemon) => {
+        // Use this after figuring out how to add a selector for the ability
+        // if (pokemon.species.getAbilityCount() === 1) {
+        if (!pokemon.species.abilityHidden) {
+          return PartyUiHandler.NoEffectMessage;
+        }
+        return null;
+      }
+    );
+
+    this.index = index;
+  }
+
+  get name(): string {
+    return i18next.t("modifierType:ModifierType.PokemonAbilityChangeModifierType.name");
+  }
+
+  getDescription(scene: BattleScene): string {
+    return i18next.t("modifierType:ModifierType.PokemonAbilityChangeModifierType.description");
+  }
+}
+
 export class RememberMoveModifierType extends PokemonModifierType {
   constructor(localeKey: string, iconImage: string, group?: string) {
     super(localeKey, iconImage, (type, args) => new Modifiers.RememberMoveModifier(type, (args[0] as PlayerPokemon).id, (args[1] as integer)),
@@ -1105,6 +1141,15 @@ export const modifierTypes = {
     return new PokemonNatureChangeModifierType(Utils.randSeedInt(Utils.getEnumValues(Nature).length) as Nature);
   }),
 
+  ABILITY_PATCH: () => new ModifierTypeGenerator((party: Pokemon[], pregenArgs?: any[]) => {
+    //TODO: Figure out how to display a list of abilities to choose from
+    if (pregenArgs) {
+      return new PokemonAbilityChangeModifierType(4);
+    }
+
+    return new PokemonAbilityChangeModifierType(4);
+  }),
+
   TERA_SHARD: () => new ModifierTypeGenerator((party: Pokemon[], pregenArgs?: any[]) => {
     if (pregenArgs) {
       return new TerastallizeModifierType(pregenArgs[0] as Type);
@@ -1232,6 +1277,8 @@ interface ModifierPool {
 
 const modifierPool: ModifierPool = {
   [ModifierTier.COMMON]: [
+    //TODO: Modify weight after development and testing are complete
+    new WeightedModifierType(modifierTypes.ABILITY_PATCH, 100),
     new WeightedModifierType(modifierTypes.POKEBALL, 6),
     new WeightedModifierType(modifierTypes.RARE_CANDY, 2),
     new WeightedModifierType(modifierTypes.POTION, (party: Pokemon[]) => {

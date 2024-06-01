@@ -61,6 +61,7 @@ export default abstract class Pokemon extends Phaser.GameObjects.Container {
   public species: PokemonSpecies;
   public formIndex: integer;
   public abilityIndex: integer;
+  public abilityIndexOverride: integer | -1;
   public passive: boolean;
   public shiny: boolean;
   public variant: Variant;
@@ -152,6 +153,7 @@ export default abstract class Pokemon extends Phaser.GameObjects.Container {
       }
       this.nature = dataSource.nature || 0 as Nature;
       this.natureOverride = dataSource.natureOverride !== undefined ? dataSource.natureOverride : -1;
+      this.abilityIndexOverride = dataSource.abilityIndexOverride !== undefined ? dataSource.abilityIndexOverride : -1;
       this.moveset = dataSource.moveset;
       this.status = dataSource.status;
       this.friendship = dataSource.friendship !== undefined ? dataSource.friendship : this.species.baseFriendship;
@@ -910,7 +912,7 @@ export default abstract class Pokemon extends Phaser.GameObjects.Container {
     if (this.isFusion()) {
       return allAbilities[this.getFusionSpeciesForm(ignoreOverride).getAbility(this.fusionAbilityIndex)];
     }
-    let abilityId = this.getSpeciesForm(ignoreOverride).getAbility(this.abilityIndex);
+    let abilityId = this.getSpeciesForm(ignoreOverride).getAbility(this.abilityIndexOverride ? this.abilityIndexOverride : this.abilityIndex);
     if (abilityId === Abilities.NONE) {
       abilityId = this.species.ability1;
     }

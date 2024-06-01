@@ -19,6 +19,7 @@ export default class PokemonData {
   public species: Species;
   public formIndex: integer;
   public abilityIndex: integer;
+  public abilityIndexOverride: integer;
   public passive: boolean;
   public shiny: boolean;
   public variant: Variant;

@@ -1232,6 +1232,31 @@ export class PokemonNatureChangeModifier extends ConsumablePokemonModifier {
   }
 }
 
+export class PokemonAbilityChangeModifier extends ConsumablePokemonModifier {
+  public index: integer;
+
+  constructor(type: ModifierType, pokemonId: integer, index: integer) {
+    super(type, pokemonId);
+
+    this.index = index;
+  }
+
+  apply(args: any[]): boolean {
+    const pokemon = args[0] as Pokemon;
+    pokemon.abilityIndexOverride = this.index;
+    let speciesId = pokemon.species.speciesId;
+    console.log(pokemon.scene.gameData.starterData[speciesId].abilityAttr, this.index);
+    pokemon.scene.gameData.starterData[speciesId].abilityAttr = this.index;
+
+    while (pokemonPrevolutions.hasOwnProperty(speciesId)) {
+      speciesId = pokemonPrevolutions[speciesId];
+      pokemon.scene.gameData.starterData[speciesId].abilityAttr = this.index;
+    }
+
+    return true;
+  }
+}
+
 export class PokemonLevelIncrementModifier extends ConsumablePokemonModifier {
   constructor(type: ModifierType, pokemonId: integer) {
     super(type, pokemonId);
